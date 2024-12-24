@@ -23,9 +23,9 @@ const Terminal = () => {
           setTimeout(() => {
             setLogs((prevLogs) => [
               ...prevLogs,
-              `𝕕𝕒𝕣𝕜 𝕛𝕠𝕜𝕖𝕣> ${result.delivery}`,
+              `${result.delivery}`,
             ]);
-          }, 2000);
+          }, 3000);
         } else {
           // Log the full result if setup/delivery is missing
           setLogs((prevLogs) => [
@@ -42,7 +42,7 @@ const Terminal = () => {
     };
 
     fetchData(); // Fetch data immediately on mount
-    const interval = setInterval(fetchData, 40000); // Fetch every 40 seconds
+    const interval = setInterval(fetchData, 2000); // Fetch every 40 seconds
 
     return () => clearInterval(interval); // Cleanup on component unmount
   }, [endpoint]);
