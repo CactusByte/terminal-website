@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const Terminal = () => {
   const [logs, setLogs] = useState([]);
-  const endpoint = 'https://v2.jokeapi.dev/joke/Dark,Pun?type=twopart'; // Replace with your actual API endpoint
+  const [isFetching, setIsFetching] = useState(true);
+  const endpoint = 'https://v2.jokeapi.dev/joke/Dark,Pun?type=twopart';
+  const intervalRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -13,13 +15,13 @@ const Terminal = () => {
         const result = await response.json();
 
         if (result.setup && result.delivery) {
-          // Display the setup first
+          // Display the setup
           setLogs((prevLogs) => [
             ...prevLogs,
             `𝕕𝕒𝕣𝕜 𝕛𝕠𝕜𝕖𝕣> ${result.setup}`,
           ]);
 
-          // Delay for 2 seconds and then display the delivery
+          // Delay for delivery
           setTimeout(() => {
             setLogs((prevLogs) => [
               ...prevLogs,
@@ -27,10 +29,10 @@ const Terminal = () => {
             ]);
           }, 3000);
         } else {
-          // Log the full result if setup/delivery is missing
+          // Log if setup/delivery missing
           setLogs((prevLogs) => [
             ...prevLogs,
-            `\nResponse at ${new Date().toLocaleTimeString()}: ${JSON.stringify(result)}`,
+            `Response at ${new Date().toLocaleTimeString()}: ${JSON.stringify(result)}`,
           ]);
         }
       } catch (error) {
@@ -41,11 +43,13 @@ const Terminal = () => {
       }
     };
 
-    fetchData(); // Fetch data immediately on mount
-    const interval = setInterval(fetchData, 10000); // Fetch every 40 seconds
+    if (isFetching) {
+      fetchData();
+      intervalRef.current = setInterval(fetchData, 10000);
+    }
 
-    return () => clearInterval(interval); // Cleanup on component unmount
-  }, [endpoint]);
+    return () => clearInterval(intervalRef.current);
+  }, [endpoint, isFetching]);
 
   return (
     <div
@@ -73,7 +77,7 @@ const Terminal = () => {
         }}
       >
         <h1 style={{ fontSize: '24px', marginBottom: '16px', textAlign: 'center' }}>
-        𝕕𝕒𝕣𝕜 𝕥𝕖𝕣𝕞𝕚𝕟𝕒𝕝
+          𝕕𝕒𝕣𝕜 𝕥𝕖𝕣𝕞𝕚𝕟𝕒𝕝
         </h1>
         <div>
           {logs.map((log, index) => (
@@ -82,6 +86,20 @@ const Terminal = () => {
             </div>
           ))}
         </div>
+        <button
+          onClick={() => setIsFetching(!isFetching)}
+          style={{
+            marginTop: '10px',
+            backgroundColor: '#333',
+            color: '#fff',
+            border: 'none',
+            padding: '10px',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          {isFetching ? 'Pause' : 'Resume'}
+        </button>
       </div>
     </div>
   );
