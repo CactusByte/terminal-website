@@ -42,7 +42,7 @@ const Terminal = () => {
     };
 
     fetchData(); // Fetch data immediately on mount
-    const interval = setInterval(fetchData, 2000); // Fetch every 40 seconds
+    const interval = setInterval(fetchData, 10000); // Fetch every 40 seconds
 
     return () => clearInterval(interval); // Cleanup on component unmount
   }, [endpoint]);
